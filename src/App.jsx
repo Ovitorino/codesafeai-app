@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Bot, AlertTriangle, History, CheckCircle, Lightbulb, Clipboard, TestTube2, BookOpen, Sparkles } from 'lucide-react';
 
-// --- Configuração da API do Gemini ---
-// NÃO é necessário alterar esta parte. A chave da API será fornecida automaticamente.
-const API_KEY = "";
+
+const API_KEY = "AIzaSyBg60H90oIxmfu0AcpGnI7gioVXzsLl690";
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
 
 // --- Componentes de UI reutilizáveis ---
@@ -78,13 +77,21 @@ export default function App() {
 
   // --- Funções Auxiliares da API ---
   const callGeminiAPI = async (prompt) => {
+    if (!API_KEY || API_KEY === "COLE_SUA_CHAVE_DE_API_AQUI") {
+        throw new Error("Chave de API não configurada. Por favor, adicione sua chave de API do Gemini no topo do arquivo App.jsx.");
+    }
+
     const response = await fetch(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
     });
 
-    if (!response.ok) throw new Error(`Erro na API: ${response.statusText}`);
+    if (!response.ok) {
+        const errorBody = await response.json();
+        console.error("Erro da API:", errorBody);
+        throw new Error(`Erro na API: ${errorBody.error?.message || response.statusText}`);
+    }
     
     const data = await response.json();
     if (data.candidates && data.candidates[0] && data.candidates[0].content) {
@@ -153,7 +160,7 @@ export default function App() {
       }
     } catch (err) {
       console.error("Erro ao analisar:", err);
-      setError("Falha ao obter análise da IA. Verifique o formato da resposta e tente novamente.");
+      setError(err.message);
     } finally {
       setIsAnalyzing(false);
     }
@@ -186,7 +193,7 @@ export default function App() {
       setUnitTests(response);
     } catch (err) {
       console.error("Erro ao gerar testes:", err);
-      setError("Falha ao gerar testes unitários com a IA.");
+      setError(err.message);
     } finally {
       setIsGeneratingTests(false);
     }
@@ -221,7 +228,7 @@ export default function App() {
       setExplanation(response);
     } catch (err) {
       console.error("Erro ao explicar código:", err);
-      setError("Falha ao obter explicação da IA.");
+      setError(err.message);
     } finally {
       setIsExplaining(false);
     }
@@ -316,9 +323,10 @@ export default function App() {
             )}
 
             {error && (
-              <div className="flex items-center justify-center h-full text-center text-red-400 p-8">
-                 <AlertTriangle className="w-8 h-8 mr-3" />
-                 <p>{error}</p>
+              <div className="flex flex-col items-center justify-center h-full text-center text-red-400 p-8">
+                 <AlertTriangle className="w-16 h-16 mb-4" />
+                 <h3 className="text-xl font-semibold text-white">Ocorreu um Erro</h3>
+                 <p className="mt-2 max-w-md">{error}</p>
               </div>
             )}
 
