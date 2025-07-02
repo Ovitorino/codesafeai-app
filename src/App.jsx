@@ -69,7 +69,7 @@ const translations = {
 
 
 // --- Configuração da API do Gemini ---
-const API_KEY = "COLE_SUA_CHAVE_DE_API_AQUI";
+const API_KEY = "AIzaSyBg60H90oIxmfu0AcpGnI7gioVXzsLl690";
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
 
 // --- Componentes de UI reutilizáveis ---
